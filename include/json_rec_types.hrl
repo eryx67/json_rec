@@ -3,7 +3,7 @@
 
 -type proplist() :: list({term(),term()}).
 
--type json_dict() :: {struct, proplist()}.
+-type json_dict() :: {struct, proplist()} | {proplist()}.
 -type json() :: json_dict()|list(term()).
 
 
