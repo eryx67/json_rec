@@ -152,17 +152,23 @@ keys_rec([{Key, {Pl}}|Rest], Module, Rec) ->
     UpRec = keys_rec_subrec(Key, Module, Pl, Rec),
     keys_rec(Rest, Module, UpRec);
 keys_rec([{Key, Value}|Rest], Module, Rec) ->
-    Field = list_to_atom(binary_to_list(Key)),
+    Field = binary_to_atom(Key, utf8),
     NewValue = to_value(Value,Module),
     NewRec = module_set(Module, {Field, NewValue}, Rec),
     keys_rec(Rest,Module,NewRec).
 
 keys_rec_subrec(Key, Module, Pl, Rec) ->
-    Field = list_to_atom(binary_to_list(Key)),
-    Value = case module_new(Module, Key, undefined) of
+    Field = binary_to_atom(Key, utf8),
+    RecName = atom_to_binary(element(1, Rec), utf8),
+    Value = case module_new(Module, {RecName, Key}, undefined) of
                 undefined ->
-                    %% this is not a sub record, so just pl it
-                    pl(Pl,Module);
+                    case module_new(Module, Key, undefined) of
+                        undefined ->
+                            pl(Pl,Module);
+                        SubRec ->
+                            %% we have a new record, go back go the topproplist
+                            to_rec({struct,Pl}, Module, SubRec)
+                    end;
                 SubRec ->
                     %% we have a new record, go back go the topproplist
                     to_rec({struct,Pl}, Module, SubRec)
