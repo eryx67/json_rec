@@ -238,9 +238,14 @@ module_has_rec([M|T],Rec, Act) ->
 
 
 
-module_set(Ms, Kv, Rec) ->
+module_set(Ms, Kv={K,_}, Rec) ->
     M = module_has_rec(Ms,Rec),
-    M:'#set-'([Kv],Rec).
+    case M:'#pos-'(element(1, Rec), K) of
+        0 ->
+            Rec;
+        _ ->
+            M:'#set-'([Kv],Rec)
+    end.
 
 module_rec_fields(Ms, Rec ) ->
     M = module_has_rec(Ms,Rec),
