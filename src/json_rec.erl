@@ -205,7 +205,7 @@ to_value({struct, Pl}, Module, _Acc) ->
     pl(Pl,Module);
 to_value({Pl}, Module, _Acc) ->
     pl(Pl,Module);
-to_value([], _Module, Acc) -> Acc;
+to_value([], _Module, Acc) -> lists:reverse(Acc);
 to_value([H|T],Module, Acc) ->
     to_value(T,Module,[to_value(H,Module,[])|Acc]);
 to_value(V,_Module,_Acc) -> V.
