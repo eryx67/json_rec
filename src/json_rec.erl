@@ -60,10 +60,14 @@ to_json(Record, Module, ConvType) ->
 
 rec_keys([], _Record, _Module, _ConvType, Acc) -> Acc;
 rec_keys([Field|Rest],Record,Module, ConvType, Acc) ->
-    Value = module_get(Module, Field, Record),
-    Key = list_to_binary(atom_to_list(Field)),
-    JsonValue = field_value(Value,Module, ConvType, []),
-    rec_keys(Rest, Record, Module, ConvType, [{Key,JsonValue}|Acc]).
+    case module_get(Module, Field, Record) of
+        undefined ->
+            rec_keys(Rest, Record, Module, ConvType, [Acc]);
+        Value ->
+            Key = list_to_binary(atom_to_list(Field)),
+            JsonValue = field_value(Value,Module, ConvType, []),
+            rec_keys(Rest, Record, Module, ConvType, [{Key,JsonValue}|Acc])
+    end.
 
 field_value(Value, Module, ConvType, _Acc) when is_tuple(Value) ->
     case module_has_rec(Module, Value, false) of
@@ -186,8 +190,6 @@ pl([{Key, {struct,Pl}}|Rest], Module, Acc) ->
 pl([{Key, {Pl}}|Rest], Module, Acc) ->
     Value = pl_subrec_value(Pl, Key, Module),
     pl(Rest, Module, [Value|Acc]);
-pl([{_Key,undefined}|Rest], Module, Acc) ->
-    pl(Rest, Module, [Acc]);
 pl([{Key,Value}|Rest], Module, Acc) ->
     pl(Rest, Module, [{Key,Value}|Acc]).
 
