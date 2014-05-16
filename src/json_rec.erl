@@ -186,6 +186,8 @@ pl([{Key, {struct,Pl}}|Rest], Module, Acc) ->
 pl([{Key, {Pl}}|Rest], Module, Acc) ->
     Value = pl_subrec_value(Pl, Key, Module),
     pl(Rest, Module, [Value|Acc]);
+pl([{_Key,undefined}|Rest], Module, Acc) ->
+    pl(Rest, Module, [Acc]);
 pl([{Key,Value}|Rest], Module, Acc) ->
     pl(Rest, Module, [{Key,Value}|Acc]).
 
