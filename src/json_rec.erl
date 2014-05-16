@@ -62,7 +62,7 @@ rec_keys([], _Record, _Module, _ConvType, Acc) -> Acc;
 rec_keys([Field|Rest],Record,Module, ConvType, Acc) ->
     case module_get(Module, Field, Record) of
         undefined ->
-            rec_keys(Rest, Record, Module, ConvType, [Acc]);
+            rec_keys(Rest, Record, Module, ConvType, Acc);
         Value ->
             Key = list_to_binary(atom_to_list(Field)),
             JsonValue = field_value(Value,Module, ConvType, []),
